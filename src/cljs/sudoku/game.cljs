@@ -49,7 +49,7 @@
   (reduce-true
    (fn [values [s d]] (assign values s d))
    (into {} (for [s squares] [s digits])) ;to start, any square can be any digit
-   (remove (comp nil? val) (grid-values grid))))
+   (remove (comp nil? val) grid)))
  
 ;;; Constraint Propagation ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  
@@ -86,7 +86,20 @@
                  values))))
          values
          (units s))))))
- 
+
+(defn search
+  "Using depth-first search and propagation, try all possible values"
+  [values]
+  (when values
+    (let [scount (comp count values)] ;digits remaining
+      (if (every? #(= 1 (scount %)) squares)
+        values ;solved!
+        (let [s (apply min-key scount (filter #(< 1 (scount %)) squares))]
+          (some identity (for [d (values s)]
+                           (search (assign values s d)))))))))
+
+(defn solve [grid] (-> grid grid-values parse-grid search))
+
 (defn- reduce-true
   "Like reduce but short-circuits upon logical false"
   [f val coll]
