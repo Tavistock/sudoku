@@ -1,3 +1,42 @@
-h1 {
-  text-decoration: underline;
+
+.row {
+    padding: 0;
+    margin: 0;
+}
+
+.cell {
+    height: 50px;
+    width: 50px;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    margin: 0;
+    vertical-align: middle;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+}
+
+.number {
+    font-size: 26pt;
+    color: #FE5A5A;
+    line-height: 50px;
+}
+
+.row:first-child .cell {
+    border-top: 1px solid;
+}
+.row:nth-child(3) .cell {
+    border-bottom: 3px solid;
+}
+.row:nth-child(6) .cell {
+    border-bottom: 3px solid;
+}
+.cell:first-child {
+    border-left: 1px solid;
+}
+.cell:nth-child(3) {
+    border-right: 3px solid;
+}
+.cell:nth-child(6) {
+    border-right: 3px solid;
 }

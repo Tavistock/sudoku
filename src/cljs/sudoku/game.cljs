@@ -32,3 +32,67 @@
                [:c 1] [:c 3] [:c 4] [:c 5] [:c 6] [:c 7] [:c 8] [:c 9]
                [:a 1] [:a 3] [:b 1] [:b 3]}))
   :passed)
+
+(def grid1 "003020600900305001001806400008102900700000008006708200002609500800203009005010300")
+
+(defn grid-values
+  "Convert grid into a map of {square: digit}, with nil for empties"
+  [grid]
+  (zipmap squares (for [c grid :when (contains? (set (range 10)) (js/parseInt c))]
+                    (when-not (#{"0"} c)
+                      (js/parseInt c)))))
+ 
+(defn parse-grid
+  "Convert grid to a map of possible values, {square: digits}. Return false
+  on contradiction"
+  [grid]
+  (reduce-true
+   (fn [values [s d]] (assign values s d))
+   (into {} (for [s squares] [s digits])) ;to start, any square can be any digit
+   (remove (comp nil? val) (grid-values grid))))
+ 
+;;; Constraint Propagation ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 
+(defn assign
+  "Whittle down the square at s to digit d by eliminating every digit
+  except d from the square, and doing constraint propogation. Returns
+  false if a contradiction results"
+  [values s d]
+  (reduce-true #(eliminate %1 s %2)
+               values
+               (disj (values s) d)))
+ 
+(defn eliminate
+  "Eliminate digit d from square s and do any appropriate constraint
+  propogation"
+  [values s d]
+  (if-not ((values s) d)
+    values ;already eliminated
+    (when-not (= #{d} (values s)) ;can't remove last value
+      (let [values (update-in values [s] disj d)
+            values (if (= 1 (count (values s)))
+                     ;; Only one digit left, eliminate it from peers
+                     (reduce-true #(eliminate %1 %2 (first (%1 s)))
+                                  values
+                                  (peers s))
+                     values)]
+        (reduce-true
+         (fn [values u]
+           (let [dplaces (for [s u :when ((values s) d)] s)]
+             (when-not (zero? (count dplaces)) ;must be a place for this value
+               (if (= 1 (count dplaces))
+                 ;; Only one spot remaining for d in a unit -- assign it
+                 (assign values (first dplaces) d)
+                 values))))
+         values
+         (units s))))))
+ 
+(defn- reduce-true
+  "Like reduce but short-circuits upon logical false"
+  [f val coll]
+  (when val
+    (loop [val val, coll coll]
+      (if (empty? coll)
+        val
+        (when-let [val* (f val (first coll))]
+          (recur val* (rest coll)))))))
