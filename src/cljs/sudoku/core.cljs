@@ -3,8 +3,18 @@
             [om.dom :as dom :include-macros true]
             [sudoku.game :as game]))
 
-(defonce app-state (atom {:current-board (game/grid-values game/grid1)
+(defonce app-state (atom {:current-board game/blank-board
                           :locked []}))
+
+(defonce app-history (atom [@app-state]))
+
+(add-watch app-state :history
+           (fn [_ _ _ n]
+             (when-not (= (last @app-history) n)
+               (swap! app-history conj n))))
+
+(defn locked []
+  (om/ref-cursor (:locked (om/root-cursor app-state))))
 
 (defn in-rows
   [grid]
@@ -19,11 +29,15 @@
     om/IRender
     (render
       [_]
-      (let [id (clj->js (key cell))
-            value (val cell)]
-      (dom/div #js {:className "cell"} 
-               (dom/span #js {:className "id"} id)
-               (dom/span #js {:className "number"} value))))))
+      (let [id-clj (key cell)
+            id     (clj->js id-clj)
+            value  (val cell)
+            xs (om/observe owner (locked))]
+        (dom/div #js {:className "cell"} 
+                 (dom/span #js {:className "id"} id)
+                 (dom/span (if (some #(= id-clj %) xs)
+                             #js {:className "number locked"}
+                             #js {:className "number"}) value))))))
 
 (defn sudoku-row-view [row owner]
   (reify
@@ -59,16 +73,27 @@
   [grid]
   (= 81 (count grid)))
 
-(defn transact-board! [app text]
+(defn parse-new-board! [app text]
   (let [sudoku-text (str->sudoku text)]
     (om/transact! app :current-board #(game/grid-values sudoku-text))))
 
-(defn solve-board! [app grid]
-  (om/transact! app :current-board #(->> grid
-                                        game/parse-grid
-                                        game/search
-                                        (map (fn [x] [(first x) (first (second x))]))
-                                        )))
+(defn solved [board]
+  (->> board
+       game/parse-grid
+       game/search
+       (map (fn [x] [(first x) (first (second x))]))))
+
+(defn solve-board! [app board]
+  (om/transact! app :current-board #(solved board)))
+
+(defn locked-board [board]
+  (->> board
+       (filter second)
+       (map first)
+       vec))
+
+(defn lock-board! [app board]
+  (om/update! app [:locked] (locked-board board)))
 
 (defn sudoku-control-view [app owner]
   (reify
@@ -85,9 +110,16 @@
                         :value (:text state)
                         :onChange #(handle-change % owner)})
         (dom/button (if (valid-grid? (:text state))
-                      #js {:onClick #(transact-board! app (:text state))}
+                      #js {:onClick #(parse-new-board! app (:text state))}
                       #js {:disabled true}) "Parse")
-        (dom/button #js {:onClick #(solve-board! app (:current-board @app))} "Solve")))))
+        (dom/button #js {:onClick #(solve-board! app (:current-board @app))} "Solve")
+        (dom/button #js {:onClick #(lock-board! app (:current-board @app))} "Lock")
+        (dom/button #js {:onClick #(parse-new-board! app game/grid1)} "Simple")
+        (dom/button #js {:onClick #(when (> (count @app-history) 1)
+                                     (swap! app-history pop)
+                                     (reset! app-state (last @app-history)))} "Undo")))))
+
+(game/grid-values game/grid1)
 
 (defn main []
   (om/root sudoku-board-view app-state

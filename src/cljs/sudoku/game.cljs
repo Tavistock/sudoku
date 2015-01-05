@@ -35,12 +35,15 @@
 
 (def grid1 "003020600900305001001806400008102900700000008006708200002609500800203009005010300")
 
+
 (defn grid-values
   "Convert grid into a map of {square: digit}, with nil for empties"
   [grid]
   (zipmap squares (for [c grid :when (contains? (set (range 10)) (js/parseInt c))]
                     (when-not (#{"0"} c)
                       (js/parseInt c)))))
+
+(def blank-board (grid-values (reduce str (repeat 81 "0"))))
  
 (defn parse-grid
   "Convert grid to a map of possible values, {square: digits}. Return false
