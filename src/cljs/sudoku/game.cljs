@@ -44,6 +44,7 @@
                       (js/parseInt c)))))
 
 (def blank-board (grid-values (reduce str (repeat 81 "0"))))
+(def board1 (grid-values grid1))
  
 (defn parse-grid
   "Convert grid to a map of possible values, {square: digits}. Return false
