@@ -2,17 +2,6 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]))
 
-(defn palette-view [app owner]
-  (reify
-    om/IRender
-    (render
-      [_]
-      (let [number (get-in app [:gui :number])]
-        (dom/div
-          #js {:className "palette"}
-          (om/build palette-selected-view number)
-          (om/build palette-col-view number))))))
-
 (defn palette-selected-view [number owner]
   (reify
     om/IRender
@@ -33,3 +22,14 @@
             #js {:className "palette-col-num"
                  :onMouseDown #(om/update! number [x])}
             x))))))
+
+(defn palette-view [app owner]
+  (reify
+    om/IRender
+    (render
+      [_]
+      (let [number (get-in app [:gui :number])]
+        (dom/div
+          #js {:className "palette"}
+          (om/build palette-selected-view number)
+          (om/build palette-col-view number))))))
