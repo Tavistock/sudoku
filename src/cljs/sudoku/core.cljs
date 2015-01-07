@@ -7,6 +7,7 @@
             [sudoku.components.palette :refer [palette-view]]
             [sudoku.components.board :refer [board-view]]
             [sudoku.components.historymenu :refer [historymenu-view]]
+            [sudoku.components.newboardmenu :refer [newboardmenu-view]]
             ))
 
 (defn sudoku-app-view [app owner]
@@ -16,10 +17,11 @@
       [_]
       (dom/div
         nil 
-        (dom/div nil "App")
+        (dom/div #js {:className "app"} "App")
         (om/build palette-view app)
         (om/build board-view app)
-        (om/build historymenu-view app)))))
+        (om/build historymenu-view app)
+        (om/build newboardmenu-view app)))))
 
 (defn main []
   (om/root sudoku-app-view app-state

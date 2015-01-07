@@ -1,3 +1,11 @@
+body {
+    margin: 0;
+}
+
+.app {
+    display: inline-block;
+}
+
 /*
  *Palette
  */
@@ -116,4 +124,52 @@
 
 .highlighted {
     background: #FFF7BD;
+}
+
+/**/
+/* Historymenu*/
+/**/
+.historymenu {
+    margin: 0 1em 1em 1em;
+    display: inline-block;
+    vertical-align:top;
+    background: #3F3F3F;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    cursor: default;}
+
+.historymenu__header {
+    display: inline-block;
+}
+
+.historymenu__title,
+.historymenu__undo,
+.historymenu__redo,
+.historymenu__undo--disabled,
+.historymenu__redo--disabled {
+    color: #D8D8D8;
+    padding: .5em 1em;
+    display: inline-block;
+}
+.historymenu__undo,
+.historymenu__redo,
+.historymenu__undo--disabled,
+.historymenu__redo--disabled{
+    border: #7A7A7A 1px solid;
+}
+
+.historymenu__undo--disabled,
+.historymenu__redo--disabled {
+    color: #929292;
+}
+
+.historymenu__list {
+    list-style-type: none;
+    color: #929292;
 }
