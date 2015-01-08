@@ -7,7 +7,8 @@
     om/IRender
     (render
       [_]
-      (dom/div #js {:className "palette-selected"} (number 0)))))
+      (let [n (number 0)]
+      (dom/div #js {:className "palette-selected"} (if n n "x"))))))
 
 (defn palette-col-view [number owner]
   (reify
@@ -17,11 +18,11 @@
       (apply
         dom/div
         #js {:className "palette-col"}
-        (for [x (range 1 10)]
+        (for [n (conj (range 1 10) nil)]
           (dom/div
             #js {:className "palette-col-num"
-                 :onMouseDown #(om/update! number [x])}
-            x))))))
+                 :onMouseDown #(om/update! number [n])}
+            (if n n "x")))))))
 
 (defn palette-view [app owner]
   (reify

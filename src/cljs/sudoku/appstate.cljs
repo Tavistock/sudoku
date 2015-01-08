@@ -1,16 +1,23 @@
 (ns sudoku.appstate
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [sudoku.game :as game]))
+            [sudoku.game :refer [grids grid-values]]))
 
-(def start-state {:board game/board1
-                  :start (->> game/board1 (filter val) (map key) (into #{}))})
+(defn new-state [grid]
+  {:board grid
+   :start (->> grid (filter val) (map key) (into #{}))})
+
+(defn rand-grid [] (rand-nth grids))
+
+(defn rand-state [] (->> (rand-grid) grid-values new-state))
+
+(def start-state (rand-state))
 
 (defonce app-state
   (atom
     {:main start-state
      
-     :history [(assoc start-state :type :new-board)]
+     :history [(assoc start-state :type :random)]
      
      :future []
      

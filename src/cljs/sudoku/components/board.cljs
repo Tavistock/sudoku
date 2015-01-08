@@ -50,7 +50,7 @@
                   ; when the cell is not locked and you click update
                   ; the board and remove hover
                   (do
-                    (om/update! board [id] number {:add-to-undo true :type :number})
+                    (om/update! board [id] number (if number :number :clear))
                     (om/set-state! owner [:hover] nil)))
                :onMouseEnter
                #(do
