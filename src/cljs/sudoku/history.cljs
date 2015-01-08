@@ -3,14 +3,14 @@
 
 ;lists all the actions that you should add to undo
 (def add-to-undo #{:number :clear})
-(def new-state #{:easy :medium :hard :random})
+(def new-state #{:easy :medium :hard :random :blank})
 
 (defn do-new-board! [new-board type]
   (swap! app-state #(assoc % :future []))
   (swap! app-state #(assoc % :history [(assoc new-board :type type)])))
 
 (defn undo-is-possible []
-  (> (count (:history @app-state)) 0))
+  (> (count (:history @app-state)) 1))
 
 (defn redo-is-possible [] ;rename redo
   (> (count (:future @app-state)) 0))

@@ -43,7 +43,7 @@
                     (when-not (#{"0"} c)
                       (js/parseInt c)))))
 
-(def blank-board (grid-values (reduce str (repeat 81 "0"))))
+(def blank-grid (reduce str (repeat 81 "0")))
 (def board1 (grid-values grid1))
  
 (defn parse-grid

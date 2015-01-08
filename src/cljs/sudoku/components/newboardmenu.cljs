@@ -1,7 +1,7 @@
 (ns sudoku.components.newboardmenu
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [sudoku.appstate :refer [rand-state]]))
+            [sudoku.appstate :refer [rand-state blank-state]]))
 
 (defn newboardmenu-view [app owner]
   (reify
@@ -37,4 +37,10 @@
                  :onMouseDown
                  #(om/update! app [:main] (rand-state) :random)}
             "Random")
+          (dom/div
+            #js {:className
+                 "newboardmenu__button"
+                 :onMouseDown
+                 #(om/update! app [:main] blank-state :blank)}
+            "Blank")
           (dom/div #js {:className "newboardmenu__button"} "Parse"))))))

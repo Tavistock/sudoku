@@ -1,7 +1,7 @@
 (ns sudoku.appstate
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [sudoku.game :refer [grids grid-values]]))
+            [sudoku.game :refer [grids grid-values blank-board]]))
 
 (defn new-state [grid]
   {:board grid
@@ -10,6 +10,7 @@
 (defn rand-grid [] (rand-nth grids))
 
 (defn rand-state [] (->> (rand-grid) grid-values new-state))
+(def blank-state (->> blank-grid grid-values new-state))
 
 (def start-state (rand-state))
 
